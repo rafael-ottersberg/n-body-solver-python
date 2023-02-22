@@ -16,9 +16,9 @@ class Simulation:
         for b_i in self.bodies:
             b_i.acc = np.zeros(3)
             for b_j in self.bodies:
-                r_vec = b_j.pos - b_i.pos
-                r = np.linalg.norm(r_vec)
-                if r != 0:
+                if b_j != b_i:
+                    r_vec = b_j.pos - b_i.pos
+                    r = np.linalg.norm(r_vec)
                     b_i.acc += self.g * b_j.m * r_vec / (r ** 3.0)
 
     def run(self):
