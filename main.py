@@ -31,8 +31,7 @@ class Simulation:
             pos = pos + vel * 0.5 * self.dt
 
             a = self.calc_direct_forces(pos, masses, self.g)
-
-            vel = vel
+            
             vel = vel + a * self.dt
             pos = pos + vel * 0.5 * self.dt
 
