@@ -3,21 +3,26 @@ import numpy as np
 
 
 def read_data(filename="solar_jfc.dat"):
-    df = pd.read_csv(filename, sep=',')
-
-    number_of_bodies = len(df.index)
-
-    pos = np.zeros((number_of_bodies, 3))
-    vel = np.zeros((number_of_bodies, 3))
-
-    names = np.asarray(df['name'].values)
-    masses = np.asarray(df['m'].values)
-    pos[:,0] = np.asarray(df['x'].values)
-    pos[:,1] = np.asarray(df['y'].values)
-    pos[:,2] = np.asarray(df['z'].values)
-    vel[:,0] = np.asarray(df['vx'].values)
-    vel[:,1] = np.asarray(df['vy'].values)
-    vel[:,2] = np.asarray(df['vz'].values)
-
-    return names, masses, pos, vel
-
+    with open(filename, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        bodies = []
+        au = 1.5e11
+        m_sol = 2e30
+        day = 24.0 * 60.0 * 60.0
+        masses = []
+        pos_x = []
+        pos_y = []
+        pos_z = []
+        vel_x = []
+        vel_y = []
+        vel_z = []
+        for i, row in enumerate(reader):
+            if i > 0:
+                pos_x.append(float(row[2]) * au)
+                pos_y.append(float(row[3]) * au)
+                pos_z.append(float(row[4]) * au)
+                vel_x.append(float(row[5]) * au / day)
+                vel_y.append(float(row[6]) * au / day)
+                vel_z.append(float(row[7]) * au / day)
+                masses.append(float(row[1]) * m_sol)
+    return masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z
