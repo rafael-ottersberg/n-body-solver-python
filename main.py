@@ -48,9 +48,9 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g, benchmark=Tr
         a_x, a_y, a_z, epot = calc_direct_forces(pos_x, pos_y, pos_z, masses, g)
         ekin = []
         for i in range(len(masses)):
-            vel_x[i] = vel_x[i] + a_x[i] * 0.5 * dt
-            vel_y[i] = vel_y[i] + a_y[i] * 0.5 * dt
-            vel_z[i] = vel_z[i] + a_z[i] * 0.5 * dt
+            vel_x[i] = vel_x[i] + a_x[i] * dt
+            vel_y[i] = vel_y[i] + a_y[i] * dt
+            vel_z[i] = vel_z[i] + a_z[i] * dt
 
             pos_x[i] = pos_x[i] + vel_x[i] * 0.5 * dt
             pos_y[i] = pos_y[i] + vel_y[i] * 0.5 * dt
