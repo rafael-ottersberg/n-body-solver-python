@@ -16,6 +16,7 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
         a_x_i = 0
         a_y_i = 0
         a_z_i = 0
+        epot_i = 0
         for j in range(len(masses)):
             r_x = pos_x[j] - pos_x[i]
             r_y = pos_y[j] - pos_y[i]
@@ -25,10 +26,11 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
                 a_x_i += g * masses[j] * r_x / (r ** 3.0)
                 a_y_i += g * masses[j] * r_y / (r ** 3.0)
                 a_z_i += g * masses[j] * r_z / (r ** 3.0)
+                epot_i += np.sqrt(a_x_i ** 2 + a_y_i ** 2 + a_z_i ** 2) * masses[i] * r
         a_x.append(a_x_i)
         a_y.append(a_y_i)
         a_z.append(a_z_i)
-        epot.append(np.sqrt(a_x_i ** 2 + a_y_i ** 2 + a_z_i ** 2) * masses[i] * r)
+        epot.append(epot_i)
 
     return a_x, a_y, a_z, epot
 
