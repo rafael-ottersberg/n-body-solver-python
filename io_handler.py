@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import csv
 
 def read_data(filename="solar_jfc.dat"):
     with open(filename, newline='') as csvfile:
