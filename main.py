@@ -27,6 +27,8 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
         a_z.append(a_z_i)
 
     return a_x, a_y, a_z
+
+    
 @jit(nopython=True)
 def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
     for _ in range(t):
