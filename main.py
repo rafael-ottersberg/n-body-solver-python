@@ -1,5 +1,5 @@
 import timeit
-
+import numpy as np
 from io_handler import read_data
 from numba import jit
 
