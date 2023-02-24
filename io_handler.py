@@ -1,8 +1,5 @@
-import csv
-
+import pandas as pd
 import numpy as np
-
-from body import Body
 
 
 def read_data(filename="solar_jfc.dat"):

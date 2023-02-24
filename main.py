@@ -50,7 +50,6 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
 
 
 
-
 if __name__ == '__main__':
     masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z = read_data()
     t=100
@@ -60,3 +59,4 @@ if __name__ == '__main__':
     test()
     result = np.array(timeit.repeat(test, number=1, repeat=10))
     print(f"This took {result.mean():.3f} +/- {result.std():.3f} seconds")
+
