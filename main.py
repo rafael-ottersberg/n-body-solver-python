@@ -1,17 +1,22 @@
 import timeit
 import numpy as np
+import matplotlib.pyplot as plt
+
 from io_handler import read_data
 from numba import jit
+
 
 @jit(nopython=True)
 def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
     a_x = []
     a_y = []
     a_z = []
+    epot = []
     for i in range(len(masses)):
         a_x_i = 0
         a_y_i = 0
         a_z_i = 0
+        epot_i = 0
         for j in range(len(masses)):
             r_x = pos_x[j] - pos_x[i]
             r_y = pos_y[j] - pos_y[i]
@@ -21,15 +26,18 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
                 a_x_i += g * masses[j] * r_x / (r ** 3.0)
                 a_y_i += g * masses[j] * r_y / (r ** 3.0)
                 a_z_i += g * masses[j] * r_z / (r ** 3.0)
+                epot_i += np.sqrt(a_x_i ** 2 + a_y_i ** 2 + a_z_i ** 2) * masses[i] * r
         a_x.append(a_x_i)
         a_y.append(a_y_i)
         a_z.append(a_z_i)
+        epot.append(epot_i)
 
-    return a_x, a_y, a_z
+    return a_x, a_y, a_z, epot
 
-    
+
 @jit(nopython=True)
-def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
+def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g, benchmark=True):
+    E = []
     for _ in range(t):
         # LEAPFROG
         for i in range(len(masses)):
@@ -37,8 +45,8 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
             pos_y[i] = pos_y[i] + vel_y[i] * 0.5 * dt
             pos_z[i] = pos_z[i] + vel_z[i] * 0.5 * dt
 
-        a_x, a_y, a_z = calc_direct_forces(pos_x, pos_y, pos_z, masses, g)
-        
+        a_x, a_y, a_z, epot = calc_direct_forces(pos_x, pos_y, pos_z, masses, g)
+        ekin = []
         for i in range(len(masses)):
             vel_x[i] = vel_x[i] + a_x[i] * dt
             vel_y[i] = vel_y[i] + a_y[i] * dt
@@ -48,15 +56,26 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
             pos_y[i] = pos_y[i] + vel_y[i] * 0.5 * dt
             pos_z[i] = pos_z[i] + vel_z[i] * 0.5 * dt
 
+            ekin.append(0.5 * masses[i] * (vel_x[i] ** 2 + vel_y[i] ** 2 + vel_z[i] ** 2))
+        if not benchmark:
+            E.append(np.array(ekin).sum() + np.array(epot).sum())
+    return E
 
 
 if __name__ == '__main__':
     masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z = read_data()
-    t=100
-    dt=24 * 60 * 60
-    g=6.67408e-11
+    t = 100
+    dt = 24 * 60 * 60
+    g = 6.67408e-11
     test = lambda: run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g)
     test()
     result = np.array(timeit.repeat(test, number=1, repeat=10))
     print(f"This took {result.mean():.3f} +/- {result.std():.3f} seconds")
 
+    E = run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g, False)
+    E = np.array(E)
+    dE = np.diff(E)
+    plt.plot(range(t)[1:], dE / E[1:])
+    plt.xlabel("timestep [-]")
+    plt.ylabel(r"d$E/E$")
+    plt.show()
