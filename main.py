@@ -37,7 +37,7 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
 
 @jit(nopython=True)
 def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g, benchmark=True):
-    E = []
+    e_tot = []
     for _ in range(t):
         # LEAPFROG
         for i in range(len(masses)):
@@ -58,8 +58,8 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g, benchmark=Tr
 
             ekin.append(0.5 * masses[i] * (vel_x[i] ** 2 + vel_y[i] ** 2 + vel_z[i] ** 2))
         if not benchmark:
-            E.append(np.array(ekin).sum() + np.array(epot).sum())
-    return E
+            e_tot.append(np.array(ekin).sum() + np.array(epot).sum())
+    return e_tot
 
 
 if __name__ == '__main__':
