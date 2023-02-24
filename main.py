@@ -1,5 +1,4 @@
 import timeit
-import numpy as np
 
 from io_handler import read_data
 from numba import jit
@@ -17,7 +16,7 @@ def calc_direct_forces(pos_x, pos_y, pos_z, masses, g):
             r_x = pos_x[j] - pos_x[i]
             r_y = pos_y[j] - pos_y[i]
             r_z = pos_z[j] - pos_z[i]
-            r = np.sqrt(r_x ** 2 + r_y ** 2 + r_z ** 2)
+            r = (r_x ** 2 + r_y ** 2 + r_z ** 2)**.5
             if r != 0:
                 a_x_i += g * masses[j] * r_x / (r ** 3.0)
                 a_y_i += g * masses[j] * r_y / (r ** 3.0)
@@ -41,9 +40,9 @@ def run(masses, pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, t, dt, g):
         a_x, a_y, a_z = calc_direct_forces(pos_x, pos_y, pos_z, masses, g)
         
         for i in range(len(masses)):
-            vel_x[i] = vel_x[i] + a_x[i] * 0.5 * dt
-            vel_y[i] = vel_y[i] + a_y[i] * 0.5 * dt
-            vel_z[i] = vel_z[i] + a_z[i] * 0.5 * dt
+            vel_x[i] = vel_x[i] + a_x[i] * dt
+            vel_y[i] = vel_y[i] + a_y[i] * dt
+            vel_z[i] = vel_z[i] + a_z[i] * dt
 
             pos_x[i] = pos_x[i] + vel_x[i] * 0.5 * dt
             pos_y[i] = pos_y[i] + vel_y[i] * 0.5 * dt
